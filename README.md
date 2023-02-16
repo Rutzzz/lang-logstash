@@ -1,21 +1,32 @@
-# CodeMirror 6 language package template
+# codemirror-lang-logstash
 
-This is an example repository containing a minimal [CodeMirror](https://codemirror.net/6/) language support package. The idea is to clone it, rename it, and edit it to create support for a new language.
+[ [**WEBSITE**](https://codemirror.net/6/) | [**ISSUES**](https://github.com/codemirror/dev/issues) | [**FORUM**](https://discuss.codemirror.net/c/next/) | [**CHANGELOG**](https://github.com/Rutzzz/lang-logstash/blob/main/CHANGELOG.md) ]
 
-Things you'll need to do (see the [language support example](https://codemirror.net/6/examples/lang-package/) for a more detailed tutorial):
+This package implements logstash configuration language support for the [CodeMirror](https://codemirror.net/6/) code editor.
 
- * `git grep EXAMPLE` and replace all instances with your language name.
+The [project page](https://codemirror.net/6/) has more information, a
+number of [examples](https://codemirror.net/6/examples/) and the
+[documentation](https://codemirror.net/6/docs/).
 
- * Rewrite the grammar in `src/syntax.grammar` to cover your language. See the [Lezer system guide](https://lezer.codemirror.net/docs/guide/#writing-a-grammar) for information on this file format.
+This code is released under an
+[MIT license](https://github.com/Rutzzz/lang-logstash/tree/main/LICENSE).
 
- * Adjust the metadata in `src/index.ts` to work with your new grammar.
+We aim to be an inclusive, welcoming community. To make that explicit,
+we have a [code of
+conduct](http://contributor-covenant.org/version/1/1/0/) that applies
+to communication around the project.
 
- * Adjust the grammar tests in `test/cases.txt`.
+## API Reference
 
- * Build (`npm run prepare`) and test (`npm test`).
 
- * Rewrite this readme file.
+<dl>
+<dt id="user-content-logstash">
+  <code><strong><a href="#user-content-logstash">logstash</a></strong>() → <a href="https://codemirror.net/docs/ref#language.LanguageSupport">LanguageSupport</a></code></dt>
 
- * Optionally add a license.
+<dd><p>Logstash language support.</p></dd>
+<dt id="user-content-logstashlanguage">
+  <code><strong><a href="#user-content-logstashlanguage">logstashLanguage</a></strong>: <a href="https://codemirror.net/docs/ref#language.LezerLanguage">LezerLanguage</a></code></dt>
 
- * Publish. Put your package on npm under a name like `codemirror-lang-EXAMPLE`.
+<dd><p>A language provider based on the Lezer logstash parser, extended with highlighting and indentation information.</p>
+</dd>
+</dl>

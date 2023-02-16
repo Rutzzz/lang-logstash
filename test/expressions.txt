@@ -1,0 +1,290 @@
+# Compare expression
+
+input { 
+  if 2 > 1 { }
+}
+
+==>
+
+Config(
+  PluginSection(PluginType, 
+    PluginSectionFoldable(
+      BranchOrPlugin(
+        Branch(
+          If(
+            Condition(
+              Expression(
+                CompareExpression(
+                  Rvalue(Number),CompareOperator,Rvalue(Number)
+                )
+              )
+            ),
+            PluginSectionFoldable
+          )
+        )
+      ) 
+    )
+  )
+)
+
+# Negative expression
+
+input { 
+  if !(1) { }
+}
+
+==>
+
+Config(
+  PluginSection(PluginType, 
+    PluginSectionFoldable(
+      BranchOrPlugin(
+        Branch(
+          If(
+            Condition(
+              Expression(
+                NegativeExpression(
+                  Condition(Expression(Rvalue(Number)))
+                )
+              )
+            ),
+            PluginSectionFoldable
+          )
+        )
+      )
+    )
+  )
+)
+
+# In expression
+
+input { 
+  if 1 in 2 { }
+}
+
+==>
+
+Config(
+  PluginSection(PluginType, 
+    PluginSectionFoldable(
+      BranchOrPlugin(
+        Branch(
+          If(
+            Condition(
+              Expression(
+                InExpression(
+                  Rvalue(Number),
+                  Rvalue(Number)
+                )
+              )
+            ),
+            PluginSectionFoldable
+          )
+        )
+      )
+    )
+  )
+)
+
+# Not in expression
+
+input { 
+  if "1" not  in "2" { }
+}
+
+==>
+
+Config(
+  PluginSection(PluginType, 
+    PluginSectionFoldable(
+      BranchOrPlugin(
+        Branch(
+          If(
+            Condition(
+              Expression(
+                NotInExpression(
+                  Rvalue(String),
+                  Rvalue(String)
+                )
+              )
+            ),
+            PluginSectionFoldable
+          )
+        )
+      )
+    )
+  )
+)
+
+# Regexp expression
+
+input { 
+  if "1" =~ "12" { }
+  if 2 =~ /abc/ { }
+}
+
+==>
+
+Config(
+  PluginSection(PluginType, 
+    PluginSectionFoldable(
+      BranchOrPlugin(
+        Branch(
+          If(
+            Condition(
+              Expression(
+                RegexpExpression(
+                  Rvalue(String),
+                  RegexpOperator,
+                  String
+                )
+              )
+            ),
+            PluginSectionFoldable
+          )
+        )
+      )
+      BranchOrPlugin(
+        Branch(
+          If(
+            Condition(
+              Expression(
+                RegexpExpression(
+                  Rvalue(Number),
+                  RegexpOperator,
+                  Regexp
+                )
+              )
+            ),
+            PluginSectionFoldable
+          )
+        )
+      )
+    )
+  )
+)
+
+# Multiple expressions
+
+input { 
+  if (1 < 2) and ("a" in ["a", "b"]) { }
+}
+
+==>
+
+Config(
+  PluginSection(PluginType, 
+    PluginSectionFoldable(
+      BranchOrPlugin(
+        Branch(
+          If(
+            Condition(
+              Expression(
+                Condition(              
+                  Expression(
+                    CompareExpression(
+                      Rvalue(Number),
+                      CompareOperator,
+                      Rvalue(Number)
+                    )
+                  )
+                )
+              ),
+              BooleanOperator,
+              Expression(
+                Condition(              
+                  Expression(
+                    InExpression(
+                      Rvalue(String),
+                      Rvalue(
+                        Array(
+                          Value(String),
+                          Value(String)
+                        )
+                      )
+                    )
+                  )
+                )
+              ),
+            ),
+            PluginSectionFoldable
+          )
+        )
+      )
+    )
+  )
+)
+
+# Method expression
+
+input { 
+  if isWeekend("Sunday") { }
+}
+
+==>
+
+Config(
+  PluginSection(PluginType, 
+    PluginSectionFoldable(
+      BranchOrPlugin(
+        Branch(
+          If(
+            Condition(
+              Expression(
+                Rvalue(
+                  MethodCall(
+                    Method(Bareword),
+                    Rvalue(String)
+                  )
+                )
+              )
+            ),
+            PluginSectionFoldable
+          )
+        )
+      ) 
+    )
+  )
+)
+
+# Selector expression
+
+input { 
+  if [action] == [@metadata][field] {
+    
+  }
+}
+
+==>
+
+Config(
+  PluginSection(PluginType, 
+    PluginSectionFoldable(
+      BranchOrPlugin(
+        Branch(
+          If(
+            Condition(
+              Expression(
+                CompareExpression(
+                  Rvalue(
+                    Selector(
+                      SelectorElement
+                    )
+                  ),
+                  CompareOperator,
+                  Rvalue(
+                    Selector(
+                      SelectorElement,
+                      SelectorElement
+                    )
+                  )
+                )
+              )
+            ),
+            PluginSectionFoldable
+          )
+        )
+      ) 
+    )
+  )
+)

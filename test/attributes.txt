@@ -1,0 +1,241 @@
+# String attribute
+
+input {
+  plugin {
+    "att" => "val\n"
+  }
+}
+
+==>
+
+Config(
+  PluginSection(PluginType, 
+    PluginSectionFoldable(
+      BranchOrPlugin(
+        Plugin(
+          Name(Bareword),
+          PluginFoldable(
+            Attribute(Name(String),Value(String))
+          )
+        )
+      )
+    )
+  )
+)
+
+# Number attribute
+
+input {
+  plugin {
+    att => 253.4
+  }
+}
+
+==>
+
+Config(
+  PluginSection(PluginType, 
+    PluginSectionFoldable(
+      BranchOrPlugin(
+        Plugin(
+          Name(Bareword),
+          PluginFoldable(
+            Attribute(Name(Bareword),Value(Number))
+          )
+        )
+      )
+    )
+  )
+)
+
+# Bareword attribute
+
+input {
+  plugin {
+    att => val
+  }
+}
+
+==>
+
+Config(
+  PluginSection(PluginType, 
+    PluginSectionFoldable(
+      BranchOrPlugin(
+        Plugin(
+          Name(Bareword),
+          PluginFoldable(
+            Attribute(Name(Bareword),Value(Bareword))
+          )
+        )
+      )
+    )
+  )
+)
+
+# Empty array attribute
+
+input {
+  plugin {
+    att => []
+    att => [ ]
+  }
+}
+
+==>
+
+Config(
+  PluginSection(PluginType, 
+    PluginSectionFoldable(
+      BranchOrPlugin(
+        Plugin(
+          Name(Bareword),
+          PluginFoldable(
+            Attribute(Name(Bareword),Value(Array)),
+            Attribute(Name(Bareword),Value(Array))
+          )
+        )
+      )
+    )
+  )
+)
+
+# Nonempty array attribute
+
+input {
+  plugin {
+    att => [ 1 ]
+    att => [1,2]
+    att => [ 1, 2 ]
+    att => [ 
+      1, 2
+    ]
+  }
+}
+
+==>
+
+Config(
+  PluginSection(PluginType, 
+    PluginSectionFoldable(
+      BranchOrPlugin(
+        Plugin(
+          Name(Bareword),
+          PluginFoldable(
+            Attribute(Name(Bareword),Value(Array(Value(Number))))
+            Attribute(Name(Bareword),Value(Array(Value(Number),Value(Number))))
+            Attribute(Name(Bareword),Value(Array(Value(Number),Value(Number))))
+            Attribute(Name(Bareword),Value(Array(Value(Number),Value(Number))))
+          )
+        )
+      ) 
+    )
+  )
+)
+
+# Empty hash attribute
+
+input {
+  plugin {
+    att => {  }
+  }
+}
+
+==>
+
+Config(
+  PluginSection(PluginType, 
+    PluginSectionFoldable(
+      BranchOrPlugin(
+        Plugin(
+          Name(Bareword),
+          PluginFoldable(
+            Attribute(Name(Bareword),Value(Hash))
+          )
+        )
+      ) 
+    )
+  )
+)
+
+# Nonempty hash attribute
+
+input {
+  plugin {
+    att => { 
+      "k" => 3
+      2 => "v"
+      a => b
+      c => [     ]
+      "a" => []
+    }
+  }
+}
+
+==>
+
+Config(
+  PluginSection(PluginType,
+    PluginSectionFoldable(
+      BranchOrPlugin(
+        Plugin(
+          Name(Bareword),
+          PluginFoldable(
+            Attribute(Name(Bareword),
+              Value(
+                Hash(
+                  HashEntries(
+                    HashEntry(String,Value(Number)),
+                    HashEntry(Number,Value(String)),
+                    HashEntry(Bareword,Value(Bareword)),
+                    HashEntry(Bareword,Value(Array)),
+                    HashEntry(String,Value(Array))
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    ) 
+  )
+)
+
+# Plugin attribute
+
+input {
+  plugin {
+    att => nestedplugin { }
+    att2 => nestedplugin2 { a => b }
+  }
+}
+
+==>
+
+Config(
+  PluginSection(PluginType,
+    PluginSectionFoldable(
+      BranchOrPlugin(
+        Plugin(
+          Name(Bareword),
+          PluginFoldable(
+            Attribute(Name(Bareword),
+              Value(
+                Plugin(Name(Bareword), PluginFoldable)
+              )
+            ),
+            Attribute(Name(Bareword),
+              Value(
+                Plugin(Name(Bareword), 
+                  PluginFoldable(
+                    Attribute(Name(Bareword), Value(Bareword))
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+)

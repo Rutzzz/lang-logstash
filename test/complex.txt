@@ -1,0 +1,285 @@
+# Complex use case 1
+
+input { stdin { } }
+
+filter {
+  grok {
+    match => { "message" => "%{COMBINEDAPACHELOG}" }
+  }
+  date {
+    match => [ "timestamp" , "dd/MMM/yyyy:HH:mm:ss Z" ]
+  }
+}
+
+output {
+  elasticsearch { hosts => ["localhost:9200"] }
+  stdout { codec => rubydebug }
+}
+
+==>
+
+Config(
+  PluginSection(PluginType, 
+    PluginSectionFoldable(
+      BranchOrPlugin(
+        Plugin(
+          Name(Bareword),PluginFoldable
+        )
+      )
+    )
+  ),
+  PluginSection(PluginType, 
+    PluginSectionFoldable(
+      BranchOrPlugin(
+        Plugin(
+          Name(Bareword),PluginFoldable(
+            Attribute(
+              Name(Bareword), Value(
+                Hash(
+                  HashEntries(
+                    HashEntry(String, Value(String))
+                  )
+                )
+              )
+            )
+          )
+        )
+      ),
+      BranchOrPlugin(
+        Plugin(
+          Name(Bareword),PluginFoldable(
+            Attribute(
+              Name(Bareword), Value(
+                Array(
+                  Value(String),
+                  Value(String)
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  ),
+  PluginSection(PluginType, 
+    PluginSectionFoldable(
+      BranchOrPlugin(
+        Plugin(
+          Name(Bareword),PluginFoldable(
+            Attribute(
+              Name(Bareword), Value(
+                Array(
+                  Value(String)
+                )
+              )
+            )
+          )
+        )
+      ),
+      BranchOrPlugin(
+        Plugin(
+          Name(Bareword),PluginFoldable(
+            Attribute(
+              Name(Bareword), Value(Bareword)
+            )
+          )
+        )
+      )
+    )
+  )
+)
+
+
+# Complex use case 2
+
+input {
+  file {
+    path => "/tmp/*_log"
+  }
+}
+
+filter {
+  if [path] =~ "access" {
+    mutate { replace => { type => "apache_access" } }
+    grok {
+      match => { "message" => "%{COMBINEDAPACHELOG}" }
+    }
+    date {
+      match => [ "timestamp" , "dd/MMM/yyyy:HH:mm:ss Z" ]
+    }
+  } else if [path] =~ "error" {
+    mutate { replace => { type => "apache_error" } }
+  } else {
+    mutate { replace => { type => "random_logs" } }
+  }
+}
+
+output {
+  elasticsearch { hosts => ["localhost:9200"] }
+  stdout { codec => rubydebug }
+}
+
+==>
+
+Config(
+  PluginSection(PluginType, 
+    PluginSectionFoldable(
+      BranchOrPlugin(
+        Plugin(
+          Name(Bareword),PluginFoldable(
+            Attribute(
+              Name(Bareword), Value(String)
+            )
+          )
+        )
+      )
+    )
+  ),
+  PluginSection(PluginType, 
+    PluginSectionFoldable(
+      BranchOrPlugin(
+        Branch(
+          If(
+            Condition(
+              Expression(
+                RegexpExpression(
+                  Rvalue(
+                    Selector(SelectorElement)
+                  ),
+                  RegexpOperator,
+                  String
+                )
+              )
+            ),
+            PluginSectionFoldable(
+              BranchOrPlugin(
+                Plugin(
+                  Name(Bareword),PluginFoldable(
+                    Attribute(
+                      Name(Bareword), Value(
+                        Hash(
+                          HashEntries(
+                            HashEntry(
+                              Bareword, Value(String)
+                            )
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+              ),
+              BranchOrPlugin(
+                Plugin(
+                  Name(Bareword),PluginFoldable(
+                    Attribute(
+                      Name(Bareword), Value(
+                        Hash(
+                          HashEntries(
+                            HashEntry(
+                              String, Value(String)
+                            )
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+              ),
+              BranchOrPlugin(
+                Plugin(
+                  Name(Bareword),PluginFoldable(
+                    Attribute(
+                      Name(Bareword), Value(
+                        Array(Value(String), Value(String))
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          ),
+          ElseIf(
+            Condition(
+              Expression(
+                RegexpExpression(
+                  Rvalue(
+                    Selector(SelectorElement)
+                  ),
+                  RegexpOperator,
+                  String
+                )
+              )
+            ),
+            PluginSectionFoldable(
+              BranchOrPlugin(
+                Plugin(
+                  Name(Bareword),PluginFoldable(
+                    Attribute(
+                      Name(Bareword), Value(
+                        Hash(
+                          HashEntries(
+                            HashEntry(
+                              Bareword, Value(String)
+                            )
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          ),
+          Else(
+            PluginSectionFoldable(
+              BranchOrPlugin(
+                Plugin(
+                  Name(Bareword),PluginFoldable(
+                    Attribute(
+                      Name(Bareword), Value(
+                        Hash(
+                          HashEntries(
+                            HashEntry(
+                              Bareword, Value(String)
+                            )
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  ),
+  PluginSection(PluginType, 
+    PluginSectionFoldable(
+      BranchOrPlugin(
+        Plugin(
+          Name(Bareword),PluginFoldable(
+            Attribute(
+              Name(Bareword), Value(
+                Array(
+                  Value(String)
+                )
+              )
+            )
+          )
+        )
+      ),
+      BranchOrPlugin(
+        Plugin(
+          Name(Bareword),PluginFoldable(
+            Attribute(
+              Name(Bareword), Value(Bareword)
+            )
+          )
+        )
+      )
+    )
+  )
+)

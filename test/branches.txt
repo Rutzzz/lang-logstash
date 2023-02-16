@@ -1,0 +1,106 @@
+# If branch
+
+input { 
+  if "a" { }
+}
+
+==>
+
+Config(
+  PluginSection(PluginType, 
+    PluginSectionFoldable(
+      BranchOrPlugin(
+        Branch(
+          If(
+            Condition(
+              Expression(
+                Rvalue(String)
+              )
+            ),
+            PluginSectionFoldable
+          )
+        )
+      )
+    )
+  )
+)
+
+# Else branch
+
+input { 
+  if "a" { }
+  else { }
+}
+
+==>
+
+Config(
+  PluginSection(PluginType, 
+    PluginSectionFoldable(
+      BranchOrPlugin(
+        Branch(
+          If(
+            Condition(
+              Expression(
+                Rvalue(String)
+              )
+            ),
+            PluginSectionFoldable
+          )
+          Else(
+            PluginSectionFoldable
+          )
+        )
+      )
+    )
+  )
+)
+
+# Else if branch
+
+input { 
+  if "a" { }
+  else if 2 { }
+  else if 4 { }
+  else { }
+}
+
+==>
+
+Config(
+  PluginSection(PluginType, 
+    PluginSectionFoldable(
+      BranchOrPlugin(
+        Branch(
+          If(
+            Condition(
+              Expression(
+                Rvalue(String)
+              )
+            ),
+            PluginSectionFoldable
+          ),
+          ElseIf(
+            Condition(
+              Expression(
+                Rvalue(Number)
+              )
+            ),
+            PluginSectionFoldable
+          )
+          ElseIf(
+            Condition(
+              Expression(
+                Rvalue(Number)
+              )
+            ),
+            PluginSectionFoldable
+          )
+          Else(
+            PluginSectionFoldable
+          )
+        )
+      )
+    )
+  )
+)

@@ -1,0 +1,36 @@
+# Empty plugin section
+
+input { }
+
+==>
+
+Config(PluginSection(PluginType, PluginSectionFoldable))
+
+# Empty plugin
+
+input {
+  plugin1 {}
+}
+
+==>
+
+Config(PluginSection(PluginType, 
+  PluginSectionFoldable(
+    BranchOrPlugin(
+      Plugin(Name(Bareword),PluginFoldable)
+    )
+  )
+))
+
+# Two plugin sections
+
+input {}
+filter {}
+
+==>
+
+Config(
+  PluginSection(PluginType, PluginSectionFoldable),
+  PluginSection(PluginType, PluginSectionFoldable)
+)
+

@@ -1,26 +1,80 @@
-@top Program { expression* }
+@top Config { PluginSection+ }
 
-@skip { space | LineComment }
+@skip { space | Comment }
 
-expression {
-  Identifier |
-  String |
-  Boolean |
-  Application { "(" expression* ")" }
+PluginSection { PluginType PluginSectionFoldable }
+PluginSectionFoldable { "{" BranchOrPlugin* "}" }
+
+BranchOrPlugin { Branch | Plugin }
+
+Plugin { Name PluginFoldable }
+PluginFoldable { "{" Attribute* "}" }
+Attribute { Name "=>" Value }
+Name { Bareword | String }
+Value { String | Bareword | Number | Array | Hash | Plugin }
+
+Branch { If ElseIf* Else? }
+If { @specialize<Bareword, "if"> Condition PluginSectionFoldable }
+ElseIf { @specialize<Bareword, "else"> @specialize<Bareword, "if"> Condition PluginSectionFoldable }
+Else { @specialize<Bareword, "else"> PluginSectionFoldable }
+Condition { Expression ( BooleanOperator Expression )* }
+Expression {
+  ( "(" Condition ")" )
+  | NegativeExpression
+  | InExpression
+  | NotInExpression
+  | CompareExpression
+  | RegexpExpression
+  | Rvalue
+}
+NegativeExpression { "!" "(" Condition ")" }
+InExpression { Rvalue @specialize<Bareword, "in"> Rvalue }
+NotInExpression { Rvalue @specialize<Bareword, "not"> @specialize<Bareword, "in"> Rvalue }
+CompareExpression { Rvalue CompareOperator Rvalue }
+RegexpExpression { Rvalue RegexpOperator ( String | Regexp ) }
+
+BooleanOperator { 
+  @specialize<Bareword, "and"> 
+  | @specialize<Bareword, "or"> 
+  | @specialize<Bareword, "xor"> 
+  | @specialize<Bareword, "nand"> 
 }
 
+Rvalue { String | Number | Selector | Array | MethodCall | Regexp }
+Array { "[" (Value ("," Value)* )? "]" }
+Hash { "{" HashEntries? "}" }
+HashEntries { HashEntry+ }
+HashEntry { ( Number | Bareword | String ) "=>" Value }
+Selector { SelectorElement+ }
+
+MethodCall {
+  Method "(" ( Rvalue ( "," Rvalue )* )? ")"
+}
+
+Method { Bareword }
+
 @tokens {
-  Identifier { $[a-zA-Z_\-0-9]+ }
 
-  String { '"' (!["\\] | "\\" _)* '"' }
+  PluginType { "input" | "filter" | "output" }
 
-  Boolean { "#t" | "#f" }
+  Bareword { @asciiLetter (@asciiLetter | @digit )* }
+  Number { "-"? $[0-9]+ ("." $[0-9]*)? }
+  Regexp { '/' ( '\/' | ![/] )* '/' }
+  SingleQuotedString { "'" ( "\\'" | !['] _ )* "'" }
+  DoubleQuotedString { '"' (!["\\] | "\\" )* '"' }
+  String { DoubleQuotedString | SingleQuotedString }
 
-  LineComment { ";" ![\n]* }
+  SelectorElement { "[" ![\], '"]+ "]" }
 
-  space { $[ \t\n\r]+ }
+  Comment { "#" ![\r\n]* "\r"? "\n" }
 
-  "(" ")"
+  space { @whitespace+ }
+
+  CompareOperator { "==" | "!=" | "<=" | ">=" | "<" | ">" }
+  RegexpOperator { "=~" | "!~" }
+
+  "{" "}" "[" "]" "(" ")"
+
 }
 
 @detectDelim

@@ -1,30 +1,37 @@
 import {parser} from "./syntax.grammar"
-import {LRLanguage, LanguageSupport, indentNodeProp, foldNodeProp, foldInside, delimitedIndent} from "@codemirror/language"
+import {LRLanguage, LanguageSupport, indentNodeProp, foldNodeProp, foldInside, continuedIndent} from "@codemirror/language"
 import {styleTags, tags as t} from "@lezer/highlight"
 
-export const EXAMPLELanguage = LRLanguage.define({
+export const logstashLanguage = LRLanguage.define({
   parser: parser.configure({
     props: [
       indentNodeProp.add({
-        Application: delimitedIndent({closing: ")", align: false})
+        PluginSectionFoldable: continuedIndent({except: /^\s*\}/}),
+        PluginFoldable: continuedIndent({except: /^\s*\}/})
       }),
       foldNodeProp.add({
-        Application: foldInside
+        "PluginSectionFoldable PluginFoldable Hash Array": foldInside
       }),
       styleTags({
-        Identifier: t.variableName,
-        Boolean: t.bool,
+        PluginType: t.className,
+        Bareword: t.name,
         String: t.string,
-        LineComment: t.lineComment,
+        Number: t.number,
+        Comment: t.lineComment,
+        SelectorElement: t.variableName,
+        "[ ]": t.squareBracket,
+        "{ }": t.brace,
         "( )": t.paren
       })
     ]
   }),
   languageData: {
-    commentTokens: {line: ";"}
+    commentTokens: {line: "#"},
+    closeBrackets: {brackets: ["[", "{", "(", '"', "'"]},
+    indentOnInput: /^\s*[\}\]]$/
   }
 })
 
-export function EXAMPLE() {
-  return new LanguageSupport(EXAMPLELanguage)
+export function logstash() {
+  return new LanguageSupport(logstashLanguage)
 }
